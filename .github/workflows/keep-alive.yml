@@ -1,0 +1,35 @@
+name: Keep HuggingFace Spaces Awake
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  wake-spaces:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping all HuggingFace Spaces
+        run: |
+          spaces=(
+            "muzeeb-shaik-m450-data-tool"
+            "muzeeb-shaik-m450-data-tool-albatross-m"
+            "muzeeb-shaik-m450-data-tool-albatross-r"
+            "muzeeb-shaik-m450-data-tool-albatross-s"
+            "muzeeb-shaik-m450-data-tool-albatross-t"
+            "muzeeb-shaik-m450-data-tool-albatross-l"
+            "muzeeb-shaik-m450-data-tool-buffalo-m"
+            "muzeeb-shaik-m450-data-tool-buffalo-r"
+            "muzeeb-shaik-m450-data-tool-buffalo-s"
+            "muzeeb-shaik-m450-data-tool-buffalo-t"
+            "muzeeb-shaik-m450-data-tool-buffalo-l"
+          )
+
+          for space in "${spaces[@]}"; do
+            url="https://${space}.hf.space"
+            echo "Pinging ${url}..."
+            status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${url}" || echo "timeout")
+            echo "  Status: ${status}"
+            sleep 2
+          done
+          echo "All spaces pinged!"
